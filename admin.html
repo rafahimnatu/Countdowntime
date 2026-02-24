@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Birthday Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Segoe UI',sans-serif; background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
+        .admin-container { max-width:800px; width:100%; background:white; border-radius:30px; box-shadow:0 20px 40px rgba(0,0,0,0.3); overflow:hidden; }
+        .admin-header { background:gold; padding:20px; text-align:center; }
+        .admin-header h1 { color:#4a4a4a; }
+        .admin-content { padding:30px; max-height:70vh; overflow-y:auto; }
+        .login-form { text-align:center; padding:40px; }
+        .login-form input { padding:12px; width:100%; margin:10px 0; border:2px solid #ddd; border-radius:25px; }
+        .login-form button { padding:12px 30px; background:linear-gradient(45deg,#ff69b4,#ff99cc); border:none; border-radius:25px; color:white; font-weight:bold; cursor:pointer; }
+        .tab-buttons { display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap; }
+        .tab-btn { padding:10px 20px; background:#f0f0f0; border:none; border-radius:25px; cursor:pointer; font-weight:bold; }
+        .tab-btn.active { background:gold; color:#4a4a4a; }
+        .tab-pane { display:none; }
+        .tab-pane.active { display:block; }
+        .form-group { margin-bottom:20px; }
+        .form-group label { display:block; margin-bottom:5px; font-weight:bold; color:#4a4a4a; }
+        .form-group input, .form-group textarea { width:100%; padding:10px; border:2px solid #ddd; border-radius:10px; }
+        .form-group textarea { height:100px; }
+        .save-btn { background:linear-gradient(45deg,#00b09b,#96c93d); color:white; border:none; padding:15px 30px; border-radius:30px; font-weight:bold; cursor:pointer; width:100%; }
+        .message { text-align:center; margin-top:20px; font-weight:bold; }
+    </style>
+</head>
+<body>
+    <div class="admin-container" id="adminContainer">
+        <div class="admin-header">
+            <h1><i class="fas fa-crown"></i> Birthday Admin Panel</h1>
+        </div>
+        <div class="admin-content">
+            <div id="loginSection">
+                <div class="login-form">
+                    <h2>Admin Login</h2>
+                    <input type="password" id="password" placeholder="Enter password">
+                    <button onclick="checkPassword()">Login</button>
+                    <p style="margin-top:20px; color:#666;">Default password: admin123</p>
+                </div>
+            </div>
+            <div id="adminPanel" style="display:none;">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('texts')">Texts</button>
+                    <button class="tab-btn" onclick="showTab('photos')">Photos</button>
+                    <button class="tab-btn" onclick="showTab('reasons')">Reasons</button>
+                    <button class="tab-btn" onclick="showTab('videos')">Videos</button>
+                    <button class="tab-btn" onclick="showTab('social')">Social</button>
+                </div>
+                
+                <div id="textsTab" class="tab-pane active">
+                    <h3>Text Settings</h3>
+                    <!-- ফর্ম ফিল্ডগুলো JavaScript দিয়ে পূরণ হবে -->
+                    <div id="textsForm"></div>
+                </div>
+                
+                <div id="photosTab" class="tab-pane">
+                    <h3>Photo Gallery</h3>
+                    <div id="photosForm"></div>
+                </div>
+                
+                <div id="reasonsTab" class="tab-pane">
+                    <h3>Reasons (4 items)</h3>
+                    <div id="reasonsForm"></div>
+                </div>
+                
+                <div id="videosTab" class="tab-pane">
+                    <h3>Videos</h3>
+                    <div id="videosForm"></div>
+                </div>
+                
+                <div id="socialTab" class="tab-pane">
+                    <h3>Social Media Links</h3>
+                    <div id="socialForm"></div>
+                </div>
+                
+                <button class="save-btn" onclick="saveConfig()"><i class="fas fa-save"></i> Save All Changes</button>
+                <div id="saveMessage" class="message"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentConfig = null;
+
+        function checkPassword() {
+            const pwd = document.getElementById('password').value;
+            if (pwd === 'admin123') {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadConfig();
+            } else {
+                alert('Wrong password!');
+            }
+        }
+
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        }
+
+        async function loadConfig() {
+            try {
+                const response = await fetch('config.json');
+                currentConfig = await response.json();
+                renderForms();
+            } catch (error) {
+                console.error('Error loading config:', error);
+            }
+        }
+
+        function renderForms() {
+            if (!currentConfig) return;
+
+            // Texts Form
+            let textsHtml = '';
+            for (const [key, value] of Object.entries(currentConfig.texts)) {
+                textsHtml += `
+                    <div class="form-group">
+                        <label>${key}:</label>
+                        <input type="text" id="text_${key}" value="${value.replace(/"/g, '&quot;')}">
+                    </div>
+                `;
+            }
+            document.getElementById('textsForm').innerHTML = textsHtml;
+
+            // Photos Form
+            let photosHtml = '';
+            currentConfig.photos.forEach((photo, index) => {
+                photosHtml += `
+                    <h4>Photo ${index + 1}</h4>
+                    <div class="form-group">
+                        <label>Thumbnail URL:</label>
+                        <input type="text" id="photo_thumb_${index}" value="${photo.thumb}">
+                    </div>
+                    <div class="form-group">
+                        <label>Large URL:</label>
+                        <input type="text" id="photo_large_${index}" value="${photo.large}">
+                    </div>
+                    <div class="form-group">
+                        <label>Date:</label>
+                        <input type="text" id="photo_date_${index}" value="${photo.date}">
+                    </div>
+                    <div class="form-group">
+                        <label>Caption:</label>
+                        <textarea id="photo_caption_${index}">${photo.caption}</textarea>
+                    </div>
+                    <hr>
+                `;
+            });
+            document.getElementById('photosForm').innerHTML = photosHtml;
+
+            // Reasons Form
+            let reasonsHtml = '';
+            currentConfig.reasons.forEach((reason, index) => {
+                reasonsHtml += `
+                    <h4>Reason ${index + 1}</h4>
+                    <div class="form-group">
+                        <label>Text:</label>
+                        <textarea id="reason_text_${index}">${reason.text}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Emoji:</label>
+                        <input type="text" id="reason_emoji_${index}" value="${reason.emoji}">
+                    </div>
+                    <div class="form-group">
+                        <label>GIF URL:</label>
+                        <input type="text" id="reason_gif_${index}" value="${reason.gif}">
+                    </div>
+                    <hr>
+                `;
+            });
+            document.getElementById('reasonsForm').innerHTML = reasonsHtml;
+
+            // Videos Form
+            let videosHtml = '';
+            currentConfig.videos.forEach((video, index) => {
+                videosHtml += `
+                    <h4>Video ${index + 1}</h4>
+                    <div class="form-group">
+                        <label>Title:</label>
+                        <input type="text" id="video_title_${index}" value="${video.title}">
+                    </div>
+                    <div class="form-group">
+                        <label>Source URL:</label>
+                        <input type="text" id="video_src_${index}" value="${video.src}">
+                    </div>
+                    <div class="form-group">
+                        <label>Poster URL:</label>
+                        <input type="text" id="video_poster_${index}" value="${video.poster}">
+                    </div>
+                    <hr>
+                `;
+            });
+            document.getElementById('videosForm').innerHTML = videosHtml;
+
+            // Social Form
+            document.getElementById('socialForm').innerHTML = `
+                <div class="form-group">
+                    <label>Facebook URL:</label>
+                    <input type="text" id="social_facebook" value="${currentConfig.social.facebook}">
+                </div>
+                <div class="form-group">
+                    <label>Instagram URL:</label>
+                    <input type="text" id="social_instagram" value="${currentConfig.social.instagram}">
+                </div>
+            `;
+        }
+
+        function saveConfig() {
+            if (!currentConfig) return;
+
+            // Texts
+            for (const key in currentConfig.texts) {
+                const input = document.getElementById(`text_${key}`);
+                if (input) currentConfig.texts[key] = input.value;
+            }
+
+            // Photos
+            currentConfig.photos.forEach((photo, index) => {
+                photo.thumb = document.getElementById(`photo_thumb_${index}`).value;
+                photo.large = document.getElementById(`photo_large_${index}`).value;
+                photo.date = document.getElementById(`photo_date_${index}`).value;
+                photo.caption = document.getElementById(`photo_caption_${index}`).value;
+            });
+
+            // Reasons
+            currentConfig.reasons.forEach((reason, index) => {
+                reason.text = document.getElementById(`reason_text_${index}`).value;
+                reason.emoji = document.getElementById(`reason_emoji_${index}`).value;
+                reason.gif = document.getElementById(`reason_gif_${index}`).value;
+            });
+
+            // Videos
+            currentConfig.videos.forEach((video, index) => {
+                video.title = document.getElementById(`video_title_${index}`).value;
+                video.src = document.getElementById(`video_src_${index}`).value;
+                video.poster = document.getElementById(`video_poster_${index}`).value;
+            });
+
+            // Social
+            currentConfig.social.facebook = document.getElementById('social_facebook').value;
+            currentConfig.social.instagram = document.getElementById('social_instagram').value;
+
+            // Save to localStorage (Netlify-এ JSON ফাইল আপডেট করা যায় না)
+            localStorage.setItem('birthdayConfig', JSON.stringify(currentConfig));
+            
+            document.getElementById('saveMessage').innerHTML = '✅ Config saved to browser! Deploy to update site.';
+            document.getElementById('saveMessage').style.color = 'green';
+        }
+    </script>
+</body>
+</html>
