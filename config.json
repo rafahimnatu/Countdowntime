@@ -1,6 +1,12 @@
 {
+  "countdown": {
+    "month": 1,
+    "day": 18,
+    "message": "🎂 Surprise at 18 Feb 12:00 AM!",
+    "age": 16
+  },
   "texts": {
-    "countdownTitle": "Time Left for Surprise",
+    "countdownTitle": "⏰ Time Left for Surprise",
     "greetingTitle": "Happy Birthday Natu",
     "greetingText": "Hey You Know What! You're the most adorable human i ever met! 💖",
     "enterBtn": "Click to enter your world 💕",
