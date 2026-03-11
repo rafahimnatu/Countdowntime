@@ -347,12 +347,12 @@
             .finally(function() { submitBtn.innerHTML = originalText; submitBtn.disabled = false; });
     });
 
-    // CONFIGURATION - আজকের দিন ১২ মার্চ, ১:২৫ PM
+    // কনফিগারেশন - রাত ১২:০০ AM (মধ্যরাত)
     const CONFIG = {
         month: 2,        // মার্চ (0=জানুয়ারি, 1=ফেব্রুয়ারি, 2=মার্চ)
-        day: 11,
-        hour: 13,        // ১:০০ PM = 13 ঘন্টা (24-hour format)
-        minute: 50,
+        day: 12,         // দিন (আপনার পছন্দমত)
+        hour: 0,         // রাত ১২:০০ AM
+        minute: 0,       // ০ মিনিট
         age: 16,
         name: "Natu.."
     };
@@ -504,11 +504,11 @@
     }
 
     function formatHour(hour) {
-        const formattedHour = hour % 12 || 12; // 13 -> 1, 0 -> 12
+        const formattedHour = hour % 12 || 12; // 0 -> 12 (মধ্যরাত), 13 -> 1
         return formattedHour;
     }
 
-    // আপডেটেড কাউন্টডাউন ফাংশন (শুধু মাস-দিন চেক)
+    // আপডেটেড কাউন্টডাউন ফাংশন - শেষ ১০ সেকেন্ডে কাউন্টডাউন অডিও
     function updateCountdown() {
         const now = new Date();
         
@@ -541,7 +541,7 @@
             }
             if (charIndex === 0) typeGreeting();
             
-            // কাউন্টডাউন শেষ, birthday audio চালানোর চেষ্টা (অটোপ্লে)
+            // জন্মদিনের দিনে birthday audio চালানোর চেষ্টা (অটোপ্লে)
             if (!birthdayAudioPlayed) {
                 birthdayAudio.play()
                     .then(() => { 
@@ -586,8 +586,8 @@
             document.getElementById('secs').textContent = String(secs).padStart(2, '0');
         }
         
-        // কাউন্টডাউন শেষের ১১ সেকেন্ড আগে কাউন্টডাউন অডিও বাজাও
-        if (diff <= 11000 && diff > 0 && !countdownAudioPlayed && audioAllowed) {
+        // কাউন্টডাউন শেষের ১০ সেকেন্ড আগে কাউন্টডাউন অডিও বাজাও (10000 ms)
+        if (diff <= 10000 && diff > 0 && !countdownAudioPlayed && audioAllowed) {
             countdownAudio.play().then(() => { countdownAudioPlayed = true; }).catch(error => {});
         }
     }
@@ -753,7 +753,7 @@
     };
 
     window.goToReasonsScreen = function() {
-        birthdayAudio.pause();
+        birthdayAudio.pause(); // এখানে অডিও বন্ধ হবে
         birthdayAudio.currentTime = 0;
         currentReasonIndex = 0;
         document.getElementById('reasonsBtn').textContent = "Click Here... 💕";
