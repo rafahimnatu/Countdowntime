@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Wait Babiee 💫</title>
+    <title>This is for you💫</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Comic+Neue:wght@700&family=Dancing+Script:wght@700&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
@@ -355,7 +355,7 @@
     // কনফিগারেশন - রাত ১২:০০ AM (মধ্যরাত)
     const CONFIG = {
         month: 2,        // মার্চ (0=জানুয়ারি, 1=ফেব্রুয়ারি, 2=মার্চ)
-        day: 15,         // দিন (আপনার পছন্দমত)
+        day: 14,         // দিন (আপনার পছন্দমত)
         hour: 0,         // রাত ১২:০০ AM
         minute: 0,       // ০ মিনিট
         age: 16,
@@ -540,7 +540,7 @@
         const timeSuffix = getTimeSuffix(CONFIG.hour);
         const displayHour = formatHour(CONFIG.hour);
         const minuteStr = CONFIG.minute.toString().padStart(2, '0');
-        document.getElementById('countdownMessage').innerHTML = `🎂 Surprise at ${CONFIG.day} ${getMonthName(CONFIG.month)} ${displayHour}:${minuteStr} ${timeSuffix}!`;
+        document.getElementById('countdownMessage').innerHTML = `Surprise at ${CONFIG.day} ${getMonthName(CONFIG.month)} ${displayHour}:${minuteStr} ${timeSuffix}!`;
         
         if (isBirthdayToday) {
             // জন্মদিনের দিন: কাউন্টডাউন শেষ, গ্রিটিং স্ক্রিন দেখাও
